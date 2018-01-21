@@ -154,7 +154,7 @@ void app_main()
     ESP_LOGI(TAG, "Free heap: %u", xPortGetFreeHeapSize());
     ESP_LOGI(TAG, "Camera demo ready");
 
-    udp_stream()
+    udp_stream();
 }
 
 static void udp_stream()
