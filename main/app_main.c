@@ -34,6 +34,13 @@
 #include "bitmap.h"
 #include "http_server.h"
 
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
+#include "lwip/api.h"
+#include "lwip/err.h"
+#include "lwip/udp.h"
+
+static void udp_stream();
 static void handle_grayscale_pgm(http_context_t http_ctx, void* ctx);
 static void handle_rgb_bmp(http_context_t http_ctx, void* ctx);
 static void handle_rgb_bmp_stream(http_context_t http_ctx, void* ctx);
@@ -147,6 +154,26 @@ void app_main()
     ESP_LOGI(TAG, "Free heap: %u", xPortGetFreeHeapSize());
     ESP_LOGI(TAG, "Camera demo ready");
 
+    udp_stream()
+}
+
+static void udp_stream()
+{
+    int port = 10;
+    int pc_port = 8080;
+
+    struct udp_pcb* pcb = udp_new();
+    udp_bind(pcb, IP_ADDR_ANY, port);
+    udp_connect(pcb, IP_ADDR_ANY, pc_port);
+
+    while(true) {
+        struct pbuf* p = pbuf_alloc(PBUF_TRANSPORT, camera_get_data_size(), PBUF_RAM);
+        camera_run();
+        p->payload = camera_get_fb();
+        p->len = camera_get_data_size();
+        p->tot_len = camera_get_data_size();
+        udp_sendto(pcb, p, IP_ADDR_BROADCAST, pc_port);
+    }
 }
 
 static esp_err_t write_frame(http_context_t http_ctx)
