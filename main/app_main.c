@@ -157,7 +157,7 @@ void app_main()
     udp_stream();
 }
 
-static void udp_stream()
+/*static void udp_stream()
 {
     int port = 10;
     int pc_port = 8080;
@@ -173,6 +173,21 @@ static void udp_stream()
         p->len = camera_get_data_size();
         p->tot_len = camera_get_data_size();
         udp_sendto(pcb, p, IP_ADDR_BROADCAST, pc_port);
+    }
+}*/
+
+static void udp_stream()
+{
+    struct netconn *conn = netconn_new(NETCONN_UDP);
+    netconn_bind(conn, NULL, 10);
+    netconn_connect(conn, IP_ADDR_BROADCAST, 12345);
+    
+    while(true) {
+        sleep(0.1);
+        struct netbuf *netbuf = netbuf_new();
+        camera_run();
+        netbuf_ref(netbuf, camera_get_fb(), camera_get_data_size());
+        netconn_send(conn, netbuf);
     }
 }
 
