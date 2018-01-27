@@ -32,7 +32,6 @@
 #include "driver/gpio.h"
 #include "camera.h"
 #include "bitmap.h"
-#include "http_server.h"
 
 #include "lwip/sys.h"
 #include "lwip/netdb.h"
@@ -135,7 +134,7 @@ static void udp_stream()
     netconn_connect(conn, IP_ADDR_BROADCAST, 12345);
     
     while(true) {
-        sleep(0.);
+        sleep(0.1);
         struct netbuf *netbuf = netbuf_new();
         camera_run();
         netbuf_ref(netbuf, camera_get_fb(), camera_get_data_size());
