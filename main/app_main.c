@@ -130,12 +130,12 @@ void app_main()
 static void udp_stream()
 {
     struct netconn *conn = netconn_new(NETCONN_UDP);
+    struct netbuf *netbuf = netbuf_new();
     netconn_bind(conn, NULL, 10);
     netconn_connect(conn, IP_ADDR_BROADCAST, 12345);
     
     while(true) {
-        sleep(0.1);
-        struct netbuf *netbuf = netbuf_new();
+        sleep(0.2);
         camera_run();
         netbuf_ref(netbuf, camera_get_fb(), camera_get_data_size());
         netconn_send(conn, netbuf);
