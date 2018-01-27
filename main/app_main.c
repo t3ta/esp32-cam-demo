@@ -169,18 +169,18 @@ static void initialise_wifi(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    wifi_config_t wifi_config = {
-        .sta = {
-            .ssid = CONFIG_WIFI_SSID,
-            .password = CONFIG_WIFI_PASSWORD,
+    wifi_config_t ap_config = {
+        .ap = {
+            .ssid = "ESP32",
+            .channel = 0,
+            .authmode = WIFI_AUTH_OPEN,
+            .ssid_hidden = 0,
+            .max_connection = 1,
+            .beacon_interval = 100,
         },
     };
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
+    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_AP) );
+    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_AP, &ap_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
-    ESP_ERROR_CHECK( esp_wifi_set_ps(WIFI_PS_NONE) );
-    ESP_LOGI(TAG, "Connecting to \"%s\"", wifi_config.sta.ssid);
-    xEventGroupWaitBits(s_wifi_event_group, CONNECTED_BIT, false, true, portMAX_DELAY);
-    ESP_LOGI(TAG, "Connected");
 }
 
